@@ -25,7 +25,7 @@
 
     // Look for the objects with declared events on the target
     _.each(decEvents, function (attrib) {
-      var objName = attrib.toLowerCase().replace('events', ''),
+      var objName = attrib.replace(/[e|E]vents/, ''),
           obj     = target[objName],
           events  = target[attrib];
 
