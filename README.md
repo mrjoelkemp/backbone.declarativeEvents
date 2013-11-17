@@ -5,7 +5,7 @@ Allows you to listen to events on Models, Collections, and sub views in a declar
 listenTo mess that typically results in Backbone views.
 
 *Technically, you can listen to events on any object property of a Backbone model, view, and collection –
-so long as that sub-object has Backbone.Events mixed in and can trigger an event that we're listening to.*
+so long as that sub-object has Backbone.Events mixed in.
 
 This is a rewrite and extension of the awesome [Codecademy/Backbone.Declarative](https://github.com/Codecademy/backbone.declarative) plugin by Amjad Masad. 
 
