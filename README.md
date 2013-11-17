@@ -1,24 +1,94 @@
-Backbone Declarative
+Backbone.Declarative
 ===
 
-Based on [1]: https://github.com/Codecademy/backbone.declarative
+Allows you to listen to events on Models, Collections, and sub views in a declarative way – cleaning up the
+listenTo mess that typically results in Backbone views.
 
-More extensible in that you can auto-bind more than model and collection events. Follows the format of objectEvents where object could also be any subview and even Backbone itself (for pub/sub).
+*Technically, you can listen to events on any object property of a Backbone model, view, and collection –
+so long as that sub-object has Backbone.Events mixed in and can trigger an event that we're listening to.*
 
-Declarative bindings should also be available on Models, Views, and Collections, not just Views.
+This is a rewrite and extension of the awesome [Codecademy/Backbone.Declarative](https://github.com/Codecademy/backbone.declarative) plugin by Amjad Masad. 
 
-2 styles of integration
+### Usage
+
+The non-declarative way:
+
+```javascript
+ExampleView = Backbone.View.extend({
+  initialize: function() {
+    this.listenTo(this.model, 'change', this.render);
+    this.listenTo(this.model, 'destroy', this.remove);
+
+    this.listenTo(this.collection, 'add', this.onAdd);
+    this.listenTo(this.collection, 'remove', this.onRemove);
+
+    this.fooView = new FooView();
+
+    this.listenTo(this.fooView, 'bar', this.onBar);
+    this.listenTo(this.fooView, 'car', this.onCar);
+  },
+  ...
+```
+
+The declarative way: just use the format `*object*Events` where *object* 
+could be the name of a model, collection, view, or event-triggerable object.
+
+```javascript
+ExampleView = Backbone.View.extend({
+  modelEvents: {
+    'change': 'render',
+    'destroy': 'remove'
+  },
+
+  collectionEvents: {
+    'add': 'onAdd',
+    'remove': 'onRemove'
+  },
+
+  fooViewEvents: {
+    'bar': 'onBar',
+    'car': 'onCar'
+  },
+
+  initialize: function() {
+    this.fooView = new FooView();
+
+    Backbone.declarative(this);
+  },
+  ...
+```
+
+**Constraints:**
+
+1. You must include the line `Backbone.declarative(this)` in order to mixin the declarative
+functionality into your View, Model, or Collection. 
+2. The statement must be the last line in your `initialize` method. Once you mixin the declarative
+functionality, it automatically sets up the event listening on the sub-objects and will
+throw an error if the sub-objects don't exist yet.
+
 ---
-1. MonkeyPatch like [1] but that feels dirty. Don't like their closed object that maintains all viewEvents (both for perf and separation of concerns: each object should be responsible for its own declarative bindings)
-2. Mixin style: Backbone.Declarative(this);
- - Looks for attributes on this that have the /([a-z]?[A-Z]?[0-9]?)+[Events]/ format and then, split those attributes to find the object name, look for those objects (Backbone isn't on the this) and then carry out the bindings.
 
----
-**Problem** is that subview and model bindings are easy in the existing declarative format since event names are usually hardcoded. However, for pubsub with a global enumeration (non-hardcoded event names), we need to initialize the BackboneEvents subobject with variables and subscript notation:
+TODO: 
 
-BackboneEvents = {}
-BackboneEvents[YouNow.Events.Foo] = 'onFoo';
+1. Provide a monkeypatch for Backbone's view, model, and collection constructors to avoid the need for 
+explicitly calling `Backbone.declarative(this)`. Although, it's nice to have fine control of when to mix in.
 
-This eliminates the possibility of having this definition cleanly attached to the view/model/etc.
+2. Handle pub/sub bindings on the Backbone object with namespaced event names:
 
-**Solution**: Maybe have those events defined by a function that returns an object that's populated with the above syntax?
+We can't do:
+
+```javascript
+BackboneEvents = {
+  Foo.bar: 'onBar'
+}
+```
+
+So we may need to do:
+
+```javascript
+BackboneEvents = function () {
+  var events = {}
+  events[Foo.bar] = 'onBar';
+  return events;
+}
+```
