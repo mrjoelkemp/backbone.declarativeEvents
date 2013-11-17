@@ -87,7 +87,7 @@ So we may need to do:
 
 ```javascript
 BackboneEvents = function () {
-  var events = {}
+  var events = {};
   events[Foo.bar] = 'onBar';
   return events;
 }
