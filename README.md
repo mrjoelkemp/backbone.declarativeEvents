@@ -1,13 +1,16 @@
 Backbone.DeclarativeEvents
 ===
 
-Allows you to listen to events on Models, Collections, and sub views in a declarative way – cleaning up the
-listenTo mess that typically results in Backbone views.
+Allows you to listen to events on Models, Collections, sub views, and the Backbone (pub/sub) object in a declarative way – cleaning up the
+`this.listenTo` mess that typically results in Backbone views.
 
-*Technically, you can listen to events on any object property of a Backbone model, view, and collection –
-so long as that sub-object has Backbone.Events mixed in.
+This is a rewrite and extension of the awesome [Codecademy/Backbone.Declarative](https://github.com/Codecademy/backbone.declarative) 
+plugin by Amjad Masad. 
 
-This is a rewrite and extension of the awesome [Codecademy/Backbone.Declarative](https://github.com/Codecademy/backbone.declarative) plugin by Amjad Masad. 
+* The main reason for the rewrite is that the original plugin only allowed for bindings on models and 
+collections – exclusively for views. 
+* This plugin allows you to set up declarative bindings for any object of a view/model/collection that
+supports backbone events – even the global Backbone object.
 
 ### Usage
 
@@ -22,10 +25,14 @@ ExampleView = Backbone.View.extend({
     this.listenTo(this.collection, 'add', this.onAdd);
     this.listenTo(this.collection, 'remove', this.onRemove);
 
+    // Example subview
     this.fooView = new FooView();
 
     this.listenTo(this.fooView, 'bar', this.onBar);
     this.listenTo(this.fooView, 'car', this.onCar);
+
+    // Pub/sub binding
+    this.listenTo(Backbone, 'event1', this.onEvent1);
   },
   ...
 ```
@@ -50,6 +57,10 @@ ExampleView = Backbone.View.extend({
     'car': 'onCar'
   },
 
+  BackboneEvents: {
+    'event1': 'onEvent1'
+  },
+
   initialize: function() {
     this.fooView = new FooView();
 
@@ -57,6 +68,41 @@ ExampleView = Backbone.View.extend({
   },
   ...
 ```
+
+#### What about namespaced event names
+
+For large, pub/sub apps, you might have a namespace/enumeration of events
+strings like the following:
+
+```javascript
+window.MyEvents = {
+  EVENT1: 'event1',
+  EVENT2: 'event2'
+};
+```
+
+However, you can't use a variable in an object literal definition. To set up this binding declaratively, 
+you should set up the `BackboneEvents` attribute to be a function that returns your event -> function name mappings.
+For example:
+
+```javascript
+ExampleView = Backbone.View.extend({
+  BackboneEvents: function () {
+    var events = {};
+
+    events[MyEvents.EVENT1] = 'onEvent1';
+    events[MyEvents.EVENT2] = 'onEvent2';
+
+    return events;
+  },
+
+  initialize: function() {
+    Backbone.declarative(this);
+  },
+  ...
+
+```
+
 
 **Constraints:**
 
@@ -72,23 +118,3 @@ TODO:
 
 1. Provide a monkeypatch for Backbone's view, model, and collection constructors to avoid the need for 
 explicitly calling `Backbone.declarative(this)`. Although, it's nice to have fine control of when to mix in.
-
-2. Handle pub/sub bindings on the Backbone object with namespaced event names:
-
-We can't do:
-
-```javascript
-BackboneEvents = {
-  Foo.bar: 'onBar'
-}
-```
-
-So we may need to do:
-
-```javascript
-BackboneEvents = function () {
-  var events = {};
-  events[Foo.bar] = 'onBar';
-  return events;
-}
-```
