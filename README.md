@@ -67,7 +67,7 @@ ExampleView = Backbone.View.extend({
   ...
 ```
 
-#### What about namespaced event names
+#### What about namespaced event names?
 
 For large, pub/sub apps, you might have a namespace/enumeration of events
 strings like the following:
