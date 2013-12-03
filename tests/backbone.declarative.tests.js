@@ -3,7 +3,11 @@
 describe('Backbone Declarative', function() {
 
   describe('My tests', function () {
-    var model, collection, view, SomeView;
+    var model, collection, view, view2, SomeView, SomeView2, Events;
+
+    Events = {
+      EVENT1: 'event1'
+    };
 
     beforeEach(function () {
       model = new Backbone.Model({
@@ -61,13 +65,37 @@ describe('Backbone Declarative', function() {
         }
       });
 
+
+      // Used for testing pub/sub namespaced events
+      SomeView2 = Backbone.View.extend({
+        BackboneEvents: function () {
+          var events = {};
+
+          events[Events.EVENT1] = 'onEvent1';
+
+          return events;
+        },
+
+        initialize: function () {
+          Backbone.declarativeEvents(this);
+        },
+
+        onEvent1: function () {
+          this.event1Triggered = true;
+        }
+      });
+
       view = new SomeView();
+      view2 = new SomeView2();
     });
 
     // Reset indicators
     afterEach(function () {
       view.fooChanged = undefined;
+      view.event1Triggered = undefined;
       view.booTriggered = undefined;
+
+      view2.event1Triggered = undefined;
     });
 
     it ('listens to events on models', function () {
@@ -88,7 +116,9 @@ describe('Backbone Declarative', function() {
     it ('listens to pub/sub events on the Backbone object', function () {
       Backbone.trigger('event1');
       expect(view.event1Triggered).toBeTruthy();
+      expect(view2.event1Triggered).toBeTruthy();
     });
+
   });
 
   describe('Amjad\'s tests', function() {

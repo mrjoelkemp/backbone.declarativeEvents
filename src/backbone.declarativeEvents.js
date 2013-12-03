@@ -26,9 +26,10 @@
     // Look for the objects with declared events on the target
     _.each(decEvents, function (attrib) {
       var objName = attrib.replace(/[e|E]vents/, ''),
-          // Hangle pub/sub bindings on the Backbone object
+          // Handle pub/sub bindings on the Backbone object
           obj     = objName === 'Backbone' ? Backbone : target[objName],
-          events  = target[attrib];
+          // Handle functions that return event mappings (ex: namespaced event names)
+          events  = _.result(target, attrib);
 
       if (! obj) throw new Error(objName + ' not found');
 
