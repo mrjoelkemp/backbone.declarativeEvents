@@ -33,7 +33,7 @@ describe('Backbone Declarative', function() {
         initialize: function () {
           this.subView = new Backbone.View();
 
-          Backbone.declarative(this);
+          Backbone.declarativeEvents(this);
         },
 
         onFooChange: function () {
@@ -106,7 +106,7 @@ describe('Backbone Declarative', function() {
           'change:foo': 'onFooChange'
         },
         initialize: function () {
-          Backbone.declarative(this);
+          Backbone.declarativeEvents(this);
         }
       });
     });
@@ -145,7 +145,7 @@ describe('Backbone Declarative', function() {
               count++;
             },
             initialize: function () {
-              Backbone.declarative(this);
+              Backbone.declarativeEvents(this);
             }
           });
 

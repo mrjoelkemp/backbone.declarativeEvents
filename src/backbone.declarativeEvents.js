@@ -14,7 +14,7 @@
     if (! Backbone) throw new Error('Can\'t find Backbone');
   }
 
-  global.Backbone.declarative = function (target) {
+  global.Backbone.declarativeEvents = function (target) {
     if (! target) throw new Error('target not defined');
 
     var

@@ -1,4 +1,4 @@
-Backbone.Declarative
+Backbone.DeclarativeEvents
 ===
 
 Allows you to listen to events on Models, Collections, and sub views in a declarative way – cleaning up the
