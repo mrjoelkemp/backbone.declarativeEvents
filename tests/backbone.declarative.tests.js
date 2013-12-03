@@ -1,3 +1,5 @@
+/*global describe: true, it: true, expect: true, beforeEach: true, afterEach: true */
+/*jslint sloppy: true*/
 describe('Backbone Declarative', function() {
 
   describe('My tests', function () {
@@ -30,6 +32,10 @@ describe('Backbone Declarative', function() {
           'boo': 'onBoo'
         },
 
+        BackboneEvents: {
+          'event1': 'onEvent1'
+        },
+
         initialize: function () {
           this.subView = new Backbone.View();
 
@@ -48,12 +54,14 @@ describe('Backbone Declarative', function() {
           if (! $.isEmptyObject(model)) {
             this.modelAdded = true;
           }
+        },
+
+        onEvent1: function () {
+          this.event1Triggered = true;
         }
       });
 
       view = new SomeView();
-
-
     });
 
     // Reset indicators
@@ -62,21 +70,25 @@ describe('Backbone Declarative', function() {
       view.booTriggered = undefined;
     });
 
-    it ('automatically listens to events on models', function () {
+    it ('listens to events on models', function () {
       model.set('foo', 'yoyo');
       expect(view.fooChanged).toBeTruthy();
     });
 
-    it ('automatically listens to events on collections', function () {
+    it ('listens to events on collections', function () {
       collection.add(new Backbone.Model());
       expect(view.modelAdded).toBeTruthy();
     });
 
-    it ('automatically listens to events on subviews', function () {
+    it ('listens to events on subviews', function () {
       view.subView.trigger('boo');
       expect(view.booTriggered).toBeTruthy();
     });
 
+    it ('listens to pub/sub events on the Backbone object', function () {
+      Backbone.trigger('event1');
+      expect(view.event1Triggered).toBeTruthy();
+    });
   });
 
   describe('Amjad\'s tests', function() {
