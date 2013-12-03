@@ -63,8 +63,6 @@ ExampleView = Backbone.View.extend({
 
   initialize: function() {
     this.fooView = new FooView();
-
-    Backbone.declarative(this);
   },
   ...
 ```
@@ -94,27 +92,11 @@ ExampleView = Backbone.View.extend({
     events[MyEvents.EVENT2] = 'onEvent2';
 
     return events;
-  },
-
-  initialize: function() {
-    Backbone.declarative(this);
-  },
+  }
   ...
 
 ```
 
+### License
 
-**Constraints:**
-
-1. You must include the line `Backbone.declarative(this)` in order to mixin the declarative
-functionality into your View, Model, or Collection. 
-2. The statement must be the last line in your `initialize` method. Once you mixin the declarative
-functionality, it automatically sets up the event listening on the sub-objects and will
-throw an error if the sub-objects don't exist yet.
-
----
-
-TODO: 
-
-1. Provide a monkeypatch for Backbone's view, model, and collection constructors to avoid the need for 
-explicitly calling `Backbone.declarative(this)`. Although, it's nice to have fine control of when to mix in.
+MIT

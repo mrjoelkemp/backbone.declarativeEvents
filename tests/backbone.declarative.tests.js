@@ -42,8 +42,6 @@ describe('Backbone Declarative', function() {
 
         initialize: function () {
           this.subView = new Backbone.View();
-
-          Backbone.declarativeEvents(this);
         },
 
         onFooChange: function () {
@@ -77,7 +75,6 @@ describe('Backbone Declarative', function() {
         },
 
         initialize: function () {
-          Backbone.declarativeEvents(this);
         },
 
         onEvent1: function () {
@@ -148,7 +145,6 @@ describe('Backbone Declarative', function() {
           'change:foo': 'onFooChange'
         },
         initialize: function () {
-          Backbone.declarativeEvents(this);
         }
       });
     });
@@ -170,12 +166,12 @@ describe('Backbone Declarative', function() {
         new ThrowerView({
           model: model,
           collection: collection
-        })
+        });
       }).toThrow();
     });
 
     it('automatically listens to objects via declarative binding', function() {
-      var count = 0;
+      var count = 0,
           SomeView = Backbone.View.extend({
             collectionEvents: {
               'change:foo': 'onFooChange'
@@ -187,7 +183,6 @@ describe('Backbone Declarative', function() {
               count++;
             },
             initialize: function () {
-              Backbone.declarativeEvents(this);
             }
           });
 

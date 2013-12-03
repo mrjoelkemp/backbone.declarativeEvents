@@ -14,7 +14,8 @@
     if (! Backbone) throw new Error('Can\'t find Backbone');
   }
 
-  global.Backbone.declarativeEvents = function (target) {
+  // Publicly accessible mixin, in case you need it for declartive bindings on custom, eventable objects
+  Backbone.declarativeEvents = function (target) {
     if (! target) throw new Error('target not defined');
 
     var
@@ -43,5 +44,28 @@
       });
     });
   };
+
+  // Monkeypatches
+  var oldView = Backbone.View,
+      oldModel = Backbone.Model,
+      oldCollection = Backbone.Collection,
+      construct = function (oldConstructor) {
+        return function () {
+          oldConstructor.apply(this, [].slice.call(arguments));
+          Backbone.declarativeEvents(this);
+        };
+      };
+
+  Backbone.View = oldView.extend({
+    constructor: construct.call(this, oldView)
+  });
+
+  Backbone.Model = oldModel.extend({
+    constructor: construct.call(this, oldModel)
+  });
+
+  Backbone.Collection = oldCollection.extend({
+    constructor: construct.call(this, oldCollection)
+  });
 
 })(this);
